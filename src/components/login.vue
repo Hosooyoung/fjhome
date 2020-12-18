@@ -4,11 +4,11 @@
   <img src="title.JPG" class="img_loc">
   </a>
   <div class="fj_nav">
-    <el-button type="text" size="default" v-on:click="login" ><strong style="color:black">Main</strong></el-button>
+    <el-button type="text" size="default" @click="go_link('main')"><strong style="color:black">Main</strong></el-button>
     <el-divider direction="vertical"></el-divider>
-  <el-button type="text" size="default" v-on:click="login" ><strong style="color:black">공지사항</strong></el-button>
+  <el-button type="text" size="default" @click="go_link('info')"  ><strong style="color:black">공지사항</strong></el-button>
   <el-divider direction="vertical"></el-divider>
-  <el-button type="text" size="default" v-on:click="login" ><strong style="color:black">게시판</strong></el-button>
+  <el-button type="text" size="default" @click="go_link('board')"><strong style="color:black">게시판</strong></el-button>
   </div>
  <div class="login_loc">
  <div v-if="status==0">
@@ -146,6 +146,17 @@ methods: {
   },
   caculate:function(){
     window.open("http://59.30.85.18:64000/food","Food Jukebox-Nutrient Caculator","width=1000,height=900")
+  },
+  go_link:function(where){
+    if(where=="main"){
+      this.$router.push({path:'./'});
+    }
+    else if(where=="info"){
+      this.$router.push({path:'./info'});
+    }
+    else if(where=="board"){
+      this.$router.push({path:'./board'});
+    }
   }
   /*,
    openModal() {

@@ -9,6 +9,18 @@
   </div>
  	<div class="listWrap">
 	  <h1>회원신청목록</h1>
+	  		 <select v-model="join_search.option">
+			<option disabled value="">옵션선택</option>
+			<option>아이디</option>
+			<option>이름</option>
+			<option>소속</option>
+			<option>연락처</option>
+			<option>이메일</option>
+			<option>장비</option>
+		</select>
+		<input type="text" v-model="join_search.contents" ref="join_search.contents" />
+		<el-button type="primary" size="mini" @click="fnjoin_Search" icon="el-icon-search"></el-button>
+		<el-button type="text" size="small" @click="join_redirection" v-if="join_show_all==true">가입신청 전체목록 보기</el-button>
        		<table class="tbList">
 				<colgroup>
 					<col width=150px />
@@ -69,7 +81,7 @@
 		</select>
 		<input type="text" v-model="search.contents" ref="search.contents" />
 		<el-button type="primary" size="mini" @click="fnSearch" icon="el-icon-search"></el-button>
-		<el-button type="text" size="small" @click="redirection" v-if="show_all==true">전체목록 다시보기</el-button>
+		<el-button type="text" size="small" @click="redirection" v-if="show_all==true">전체목록 보기</el-button>
 	
 	   		<table class="tbList">
 				<colgroup>
@@ -100,7 +112,7 @@
 					<td>{{row.email}}</td>
 					<td>{{row.user_device}}</td>
                     <td>{{row.last_login}}</td>
-                    <td style="text-align:center"><p v-if="row.user_auth==0">활동회원</p>
+                    <td style="text-align:center;font-szie:0.7em;font-weight:bold"><p v-if="row.user_auth==0">활동회원</p>
                      <p v-if="row.user_auth==2">휴면회원</p>
                      <p v-if="row.user_auth==1">관리자계정</p>
 					<br>
@@ -141,10 +153,15 @@ export default {
       	,phone:''
 		,email:''
 		,show_all:false  
+		,join_show_all:false 
 	  	,group:''
 	  	,device:''
 		,last_login:''
 		,search:{
+			option:'',
+			contents:''
+		}
+		,join_search:{
 			option:'',
 			contents:''
 		}
@@ -315,9 +332,44 @@ export default {
 		}
 		},
 		redirection(){
+			this.join_show_all=false;
+			this.$router.go();
+		},
+		fnjoin_Search(){
+			if(this.join_search.contents==''){
+				alert("검색어를 입력해주세요.")
+				return;
+			}
+			if(this.join_search.option==''){
+				alert("옵션을 선택해주세요.")
+				return;
+			}
+            if(this.join_search.option){
+				this.join_body = { 
+				page:this.join_page,
+				option:this.join_search.option
+				}
+				this.$http.get('/users/getSearchjoinList'+this.join_search.contents,{params:this.join_body})
+			.then((res)=>{
+				if(res.data.success) {
+					this.join_list = res.data.join_list;
+					this.join_paging = res.data.join_paging;
+					this.join_no = this.join_paging.totalCount - ((this.join_paging.page-1) * this.join_paging.ipp);
+					this.join_show_all=true;
+			}
+            else{
+                alert('검색내용이 없습니다.');
+			}
+			})
+        }else{
+			alert('검색내용을 확인하고 다시 시도해주세요.');
+		}
+		},
+		join_redirection(){
 			this.show_all=false;
 			this.$router.go();
-		} ,
+		}
+		,
 		goback(){
 			 this.$router.push('/')
 		},

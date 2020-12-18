@@ -54,18 +54,24 @@
     <div class="main_button_group">
     <el-button size="default" v-on:click="Download_1" round><strong style="color:#67C23A;height:54px;">재배 매뉴얼</strong></el-button>
     <el-button size="default" v-on:click="Download_2" style="margin-left:2em;" round><strong style="color:#67C23A;">제품 안전설명서<br>매뉴얼</strong></el-button>
-    <el-button size="default" v-on:click="Download_2" style="margin-left:2em;" round><strong style="color:#67C23A;">제품 사용 설명서<br>매뉴얼</strong></el-button>
+    <el-button size="default" v-on:click="Download_3 " style="margin-left:2em;" round><strong style="color:#67C23A;">제품 사용 설명서<br>매뉴얼</strong></el-button>
     </div>
   </div>
   <img src="main2.JPG">
    <div class="back2" style="background-image:url('main3.JPG')">
    <div class="back2_back">
-   <el-button type="success" size="default" style=" margin-right:310px;" v-on:click="location.href='https://gn.kist.re.kr:8443/portal/main/main.do'"><strong>더 보기</strong></el-button>
-    <el-button type="success" size="default" style=" margin-right:310px;" v-on:click="location.href='http://www.koreadigital.com/'"><strong>더 보기</strong></el-button>
-    <el-button type="success" size="default" v-on:click="location.href='http://www.jinong.co.kr/pages/index.html'"><strong>더 보기</strong></el-button>
+   <el-button type="success" size="default" style=" margin-right:310px;" v-on:click="go_link('kist')"><strong>더 보기</strong></el-button>
+    <el-button type="success" size="default" style=" margin-right:310px;" v-on:click="go_link('kd')"><strong>더 보기</strong></el-button>
+    <el-button type="success" size="default" v-on:click="go_link('jinong')"><strong>더 보기</strong></el-button>
    </div>
   </div>
-  <img src="main4.JPG">
+  <div class="back3" style="background-image:url('main4.JPG')">
+   <div class="back3_back">
+      <el-button type="text" size="small" @click="Download_4"><strong>개인정보처리지침</strong></el-button>
+      <el-divider direction="vertical"></el-divider>
+      <el-button type="text" size="small" @click="Download_5"><strong>이용약관</strong></el-button>
+   </div>
+  </div>
   </div>
   </div>
 </template>
@@ -86,9 +92,7 @@ export default {
     console.log("MAIN");
     this.fnGetInfoList();
     this.fnGetBoardList();
-     for (var i in this.list){
-       console.log(this.list[i])
-     }
+		this.get_Download_info();
   },
   
  methods: {
@@ -105,7 +109,7 @@ export default {
     const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'TT.pdf');
+    link.setAttribute('download', 'TT.xlsx');
     document.body.appendChild(link);
     link.click();
 })
@@ -187,8 +191,75 @@ fnGetBoardList() { //데이터 가져오기
 			.catch((err)=>{
 				console.log(err);
 			})
+    },
+    go_link:function(where){
+      if(where=="kist"){
+         window.open("https://gn.kist.re.kr:8443/portal/main/main.do", "한국과학기술연구원 강릉분원", "width=800, height=700, toolbar=yes, menubar=yes, scrollbars=yes, resizable=yes" ); 
+      }
+      else if(where=="kd"){
+         window.open("http://www.koreadigital.com/", "코리아디지탈 - Think Digital", "width=800, height=700, toolbar=yes, menubar=yes, scrollbars=yes, resizable=yes" ); 
+      }
+      else if(where=="jinong"){
+         window.open("http://www.jinong.co.kr/pages/index.html",  "width=800, height=700, toolbar=yes, menubar=yes, scrollbars=yes, resizable=yes" ); 
+      }
+    },
+ Download_3:function(){
+    this.$http({
+    method: 'POST',
+    url: 'http://localhost:9090/main/DownloadFile_3',
+    responseType: 'blob',
+    headers: {
+        "Content-Type": "application/pdf"
     }
- },
+})
+.then(response =>{
+    const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', '테스트.pdf');
+    document.body.appendChild(link);
+    link.click();
+})
+},
+ Download_4:function(){
+    this.$http({
+    method: 'POST',
+    url: 'http://localhost:9090/main/DownloadFile_4',
+    responseType: 'blob',
+    headers: {
+        "Content-Type": "application/pdf"
+    }
+})
+.then(response =>{
+    const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', '개인정보처리방침.pdf');
+    document.body.appendChild(link);
+    link.click();
+})
+},
+ Download_5:function(){
+    this.$http({
+    method: 'POST',
+    url: 'http://localhost:9090/main/DownloadFile_5',
+    responseType: 'blob',
+    headers: {
+        "Content-Type": "application/pdf"
+    }
+})
+.then(response =>{
+    const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', '홈페이지 이용약관.pdf');
+    document.body.appendChild(link);
+    link.click();
+})
+}
+   
+ }
+ ,
 components: {
 Login
   }
@@ -223,4 +294,7 @@ Login
 	.back1{position: relative; width:100% ;height: 700px; z-index: 2;margin-top:30px;}
 	.back2{position: relative; width:100% ;height: 800px; z-index: 2;}
 	.back2_back{position:absolute; margin-left:440px;margin-top: 570px;}
+  .back3{position: relative; width:100% ;height: 850px; z-index: 2;}
+	.back3_back {position:absolute; margin-left:1300px;margin-top: 785px; font-size:0.8em;color:#606266;  }
+  .back3_back strong{ text-decoration: none; color:black;}
 </style>  
